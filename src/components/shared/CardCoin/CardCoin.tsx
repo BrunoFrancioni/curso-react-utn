@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button } from 'react-bootstrap';
-import { Link, Redirect, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Coin } from '../../../core/models/CoinModel';
 import { addFavoriteAction, removerFavoriteAction } from '../../../core/store/coins/coins.slice';
