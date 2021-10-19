@@ -1,24 +1,32 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Header from './components/shared/Header/Header';
+import MainContent from './components/main/MainContent/MainContent';
+import CoinDetails from './components/main/CoinDetails/CoinDetails';
+import FavoritesList from './components/main/FavoritesList/FavoritesList';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header />
+      
+      <Router>
+        <Switch>
+          <Route path='/coin/:id'>
+            <CoinDetails />
+          </Route>
+
+          <Route path='/favorites'>
+            <FavoritesList />
+          </Route>
+
+          <Route exact path='/'>
+            <MainContent />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
