@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Coin } from '../../../core/models/CoinModel';
 import { addFavoriteAction, removerFavoriteAction } from '../../../core/store/coins/coins.slice';
 import { selectCoins } from '../../../core/store/store';
+import Swal from 'sweetalert2';
 
 interface Props {
     coin: Coin;
@@ -18,10 +19,28 @@ const CardCoin = ({ coin }: Props) => {
 
     const addToFavorites = () => {
         dispatch(addFavoriteAction({ coin: coin }));
+
+        Swal.fire({
+            position: 'bottom-start',
+            icon: 'success',
+            title: 'Moneda agregada correctamente a favoritos',
+            showConfirmButton: false,
+            timer: 1500,
+            width: '25rem' 
+        });
     }
 
     const removeFromFavorites = () => {
         dispatch(removerFavoriteAction({ coin: coin }));
+
+        Swal.fire({
+            position: 'bottom-start',
+            icon: 'success',
+            title: 'Moneda eliminada correctamente de favoritos',
+            showConfirmButton: false,
+            timer: 1500,
+            width: '25rem' 
+        });
     }
 
     const getInfo = (id: string) => {

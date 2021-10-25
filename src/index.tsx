@@ -7,6 +7,7 @@ import { persistStore } from 'redux-persist';
 import store from './core/store/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import AppContext from './core/context/AppContext';
 
 let persistor = persistStore(store);
 
@@ -14,7 +15,7 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <App />
+        <AppContext />
       </PersistGate>
     </Provider>
   </React.StrictMode>,

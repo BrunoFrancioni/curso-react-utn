@@ -1,39 +1,40 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import Swal from 'sweetalert2';
 import { Button, Col, Container, Form, Row, Spinner } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { Coin } from '../../../core/models/CoinModel';
 import CoinloreServices from '../../../core/services/CoinloreServices';
 import { FormModel } from '../../../core/models/FormModel';
 import useFirebaseDatabase from '../../../core/utils/firebase/useFirebaseDatabase';
+import { UserContext } from '../../../core/context/UserContext';
 
 interface IFormDTO {
     name: string;
     lastname: string;
-    email: string;
 }
 
 const CoinDetails = () => {
     const { id }: { id: string | undefined } = useParams();
+    const history = useHistory();
 
     const coinloreServices: CoinloreServices = useMemo(() => new CoinloreServices(), []);
     const { save } = useFirebaseDatabase();
+    const { user } = useContext(UserContext);
     
     const [ticker, setTicker] = useState<Coin | null>(null);
     const [searchWithErrors, setSearchWithErrors] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const initialValues: IFormDTO = {
+    let initialValues: IFormDTO = {
         name: '',
-        lastname: '',
-        email: ''
+        lastname: ''
     }
 
     const validationSchema = yup.object().shape({
         name: yup.string().required("Requerido"),
-        lastname: yup.string().required("Requerido"),
-        email: yup.string().required("Requerido").email("Ingrese un email válido")
+        lastname: yup.string().required("Requerido")
     });
 
     const getInfoCoin = useCallback(
@@ -66,16 +67,34 @@ const CoinDetails = () => {
         const form: FormModel = {
             name: data.name,
             lastname: data.lastname,
-            email: data.email,
+            email: (user?.email) ? user.email : "",
             coin_id: Number(id)
         }
 
         try {
-            const result = await save(form);
+            await save(form);
 
-            console.log(result);
+            Swal.fire({
+                position: 'bottom-start',
+                icon: 'success',
+                title: 'Solicitud creada correctamente',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '25rem'
+            });
+
+            history.push(`/coin/${id}`);
         } catch(e) {
             console.log('Error', e);
+
+            Swal.fire({
+                position: 'bottom-start',
+                icon: 'error',
+                title: 'Ha ocurrido un error. Intente nuevamente.',
+                showConfirmButton: false,
+                timer: 1500,
+                width: '25rem'
+            });
         }
     }
 
@@ -118,126 +137,109 @@ const CoinDetails = () => {
 
                     <hr />
 
-                    <Row>
-                        <h3>Si desea recibir informacion sobre la criptomoneda llene el formulario.</h3>
-                    </Row>
+                    {
+                        user?.uid &&
+                        <>
+                            <Row>
+                                <h3>Si desea recibir informacion sobre la criptomoneda llene el formulario.</h3>
+                            </Row>
 
-                    <Row>
-                        <Col></Col>
+                            <Row>
+                                <Col></Col>
 
-                        <Col>
-                            <Formik
-                                initialValues={initialValues}
-                                validationSchema={validationSchema}
-                                onSubmit={(data, { setSubmitting}) => {
-                                    setSubmitting(true);
+                                <Col>
+                                    <Formik
+                                        initialValues={initialValues}
+                                        validationSchema={validationSchema}
+                                        onSubmit={async (data, { setSubmitting, resetForm }) => {
+                                            setSubmitting(true);
 
-                                    handleSubmit(data);
+                                            await handleSubmit(data);
 
-                                    setSubmitting(false);
-                                }}
-                            >
-                                {
-                                    ({
-                                        values,
-                                        errors,
-                                        isSubmitting,
-                                        handleChange,
-                                        handleBlur,
-                                        handleSubmit,
-                                        touched
-                                    }) => (
-                                        <Form
-                                            noValidate
-                                            onSubmit={handleSubmit}
-                                        >
-                                            <Form.Group
-                                                controlId="name"
-                                                style={{ position: 'relative'}}
-                                            >
-                                                <Form.Label>Nombre</Form.Label>
-                                                <Form.Control
-                                                    size="lg"
-                                                    type="text"
-                                                    placeholder="Ingrese su nombre"
-                                                    defaultValue={values.name}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    isValid={touched.name && !errors.name}
-                                                    isInvalid={!!errors.name}
-                                                />
+                                            resetForm();
 
-                                                <Form.Control.Feedback
-                                                    type="invalid"
-                                                    tooltip
-                                                >{errors.name}</Form.Control.Feedback>
-                                            </Form.Group>
+                                            setSubmitting(false);
+                                        }}
+                                    >
+                                        {
+                                            ({
+                                                values,
+                                                errors,
+                                                isSubmitting,
+                                                handleChange,
+                                                handleBlur,
+                                                handleSubmit,
+                                                touched
+                                            }) => (
+                                                <Form
+                                                    noValidate
+                                                    onSubmit={handleSubmit}
+                                                >
+                                                    <Form.Group
+                                                        controlId="name"
+                                                        style={{ position: 'relative'}}
+                                                    >
+                                                        <Form.Label>Nombre</Form.Label>
+                                                        <Form.Control
+                                                            size="lg"
+                                                            type="text"
+                                                            placeholder="Ingrese su nombre"
+                                                            defaultValue={values.name || ''}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            isValid={touched.name && !errors.name}
+                                                            isInvalid={!!errors.name}
+                                                        />
 
-                                            <br />
+                                                        <Form.Control.Feedback
+                                                            type="invalid"
+                                                            tooltip
+                                                        >{errors.name}</Form.Control.Feedback>
+                                                    </Form.Group>
 
-                                            <Form.Group
-                                                controlId="lastname"
-                                                style={{ position: 'relative'}}
-                                            >
-                                                <Form.Label>Apellido</Form.Label>
-                                                <Form.Control
-                                                    size="lg"
-                                                    type="text"
-                                                    placeholder="Ingrese su apellido"
-                                                    defaultValue={values.lastname}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    isValid={touched.lastname && !errors.lastname}
-                                                    isInvalid={!!errors.lastname}
-                                                />
+                                                    <br />
 
-                                                <Form.Control.Feedback
-                                                    type="invalid"
-                                                    tooltip
-                                                >{errors.lastname}</Form.Control.Feedback>
-                                            </Form.Group>
+                                                    <Form.Group
+                                                        controlId="lastname"
+                                                        style={{ position: 'relative'}}
+                                                    >
+                                                        <Form.Label>Apellido</Form.Label>
+                                                        <Form.Control
+                                                            size="lg"
+                                                            type="text"
+                                                            placeholder="Ingrese su apellido"
+                                                            defaultValue={values.lastname}
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            isValid={touched.lastname && !errors.lastname}
+                                                            isInvalid={!!errors.lastname}
+                                                        />
 
-                                            <br />
+                                                        <Form.Control.Feedback
+                                                            type="invalid"
+                                                            tooltip
+                                                        >{errors.lastname}</Form.Control.Feedback>
+                                                    </Form.Group>
 
-                                            <Form.Group
-                                                controlId="email"
-                                                style={{ position: 'relative'}}
-                                            >
-                                                <Form.Label>Email</Form.Label>
-                                                <Form.Control
-                                                    size="lg"
-                                                    type="email"
-                                                    placeholder="Ingrese el email"
-                                                    defaultValue={values.email}
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    isValid={touched.email && !errors.email}
-                                                    isInvalid={!!errors.email}
-                                                />
+                                                    <br />
 
-                                                <Form.Control.Feedback
-                                                    type="invalid"
-                                                    tooltip
-                                                >{errors.email}</Form.Control.Feedback>
-                                            </Form.Group>
+                                                    <Button
+                                                        variant="success"
+                                                        disabled={isSubmitting}
+                                                        type="submit"
+                                                    >
+                                                        Crear solicitud
+                                                    </Button>
+                                                </Form>
+                                            )
+                                        }
+                                    </Formik>
+                                </Col>
 
-                                            <br />
-
-                                            <Button
-                                                variant="success"
-                                                disabled={isSubmitting}
-                                                type="submit"
-                                            >
-                                                Crear solicitud
-                                            </Button>
-                                        </Form>
-                                    )
-                                }
-                            </Formik>
-                        </Col>
-
-                        <Col></Col>
-                    </Row>
+                                <Col></Col>
+                            </Row>
+                        </>
+                    }
                 </>
             }
         </Container>
