@@ -6,20 +6,20 @@ import { selectCharacters } from '../../../core/store/store';
 import CardCoin from '../../shared/CharacterCard/CharacterCard';
 
 const FavoritesList = () => {
-    const coins = useSelector(selectCharacters);
+    const characters = useSelector(selectCharacters);
 
     return (
-        <Container className="mt-3">
+        <Container className="mt-3 mb-3">
             <h1>Lista de favoritos</h1>
             <hr />
 
-            <Row>
+            <Row className="justify-content-center">
                 {
-                    coins.favorites && coins.favorites.length !== 0 ?
+                    characters.favorites && characters.favorites.length !== 0 ?
                     (
-                        coins.favorites.map((character: Character) => {
+                        characters.favorites.map((character: Character) => {
                             return (
-                                <Col key={character.id} xs="1" sm="2" md="4" lg="4">
+                                <Col key={character.id} xs="12" sm="7" md="5" lg="3">
                                     <CardCoin character={character} />
                                 </Col>
                             )

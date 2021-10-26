@@ -52,7 +52,7 @@ const MainContent = () => {
     }
 
     return (
-        <Container className="mt-3">
+        <Container className="mt-3 mb-3">
             <h1>Inicio</h1>
             <hr />
             
@@ -66,12 +66,12 @@ const MainContent = () => {
             {
                 !loading && !searchWithErrors && characters.characters.length !== 0 &&
                 <>
-                    <Row>
+                    <Row className="justify-content-center">
                         {
                             characters.characters.length !== 0 &&
                             characters.characters.map((character: Character) => {
                                 return (
-                                    <Col key={character.id} xs="1" sm="2" md="4" lg="4">
+                                    <Col key={character.id} xs="12" sm="7" md="5" lg="3">
                                         <CharacterCoin character={character} />
                                     </Col>
                                 )

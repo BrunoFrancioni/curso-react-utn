@@ -95,8 +95,12 @@ const CharactersDetails = () => {
         }
     }
 
+    const getWiki = (character: Character) => {
+        return character.urls.findIndex((a:any) => a.type === 'wiki' || a.type === 'details');
+    }
+
     return (
-        <Container className="mt-3">
+        <Container className="mt-3 mb-3">
             <h1>Detalles del personaje</h1>
             <hr />
 
@@ -116,17 +120,46 @@ const CharactersDetails = () => {
             {
                 !loading && character &&
                 <>
-                    <Row>
+                    <Row className="justify-content-center">
                         <Col>
-                            <p><b>Nombre: </b></p>
-                            <p>{character.name}</p>
-                        </Col>
-
-                        <Col>
-                            <p><b>Descripcion: </b></p>
-                            <p>{character.description}</p>
+                            <h2>{character.name}</h2>
                         </Col>
                     </Row>
+
+                    <Row className="justify-content-center">
+                        <Col>
+                            <img 
+                                src={`${character.thumbnail.path}.${character.thumbnail.extension}`} 
+                                height="300"
+                                width="300"
+                                alt={character.name} 
+                            />
+                        </Col>
+                    </Row>
+
+                    {
+                        character.description &&
+                        <Row className="justify-content-center mt-2 mb-2">
+                            <Col>
+                                <p>{character.description}</p>
+                            </Col>
+                        </Row>
+                    }
+
+                    {
+                        getWiki(character) !== -1 &&
+                        <Row className="justify-content-center mt-2 mb-2">
+                            <Col>
+                                <a
+                                    href={character.urls[getWiki(character)].url}
+                                    target="_blank" 
+                                    rel="noreferrer"
+                                >
+                                    <Button variant="info">Ver mas detalles</Button>
+                                </a>
+                            </Col>
+                        </Row>
+                    }
 
                     <hr />
 
@@ -134,7 +167,7 @@ const CharactersDetails = () => {
                         user?.uid &&
                         <>
                             <Row>
-                                <h3>Si desea recibir informacion sobre la criptomoneda llene el formulario.</h3>
+                                <h3>Si desea recibir informacion llene el formulario.</h3>
                             </Row>
 
                             <Row>
