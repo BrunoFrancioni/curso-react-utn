@@ -3,27 +3,26 @@ import { Formik } from 'formik';
 import * as yup from 'yup';
 import Swal from 'sweetalert2';
 import { Button, Col, Container, Form, Row, Spinner } from 'react-bootstrap';
-import { useHistory, useParams } from 'react-router-dom';
-import { Coin } from '../../../core/models/CoinModel';
-import CoinloreServices from '../../../core/services/CoinloreServices';
+import { useParams } from 'react-router-dom';
+import { Character } from '../../../core/models/CharacterModel';
 import { FormModel } from '../../../core/models/FormModel';
 import useFirebaseDatabase from '../../../core/utils/firebase/useFirebaseDatabase';
 import { UserContext } from '../../../core/context/UserContext';
+import CharactersServices from '../../../core/services/CharactersServices';
 
 interface IFormDTO {
     name: string;
     lastname: string;
 }
 
-const CoinDetails = () => {
+const CharactersDetails = () => {
     const { id }: { id: string | undefined } = useParams();
-    const history = useHistory();
 
-    const coinloreServices: CoinloreServices = useMemo(() => new CoinloreServices(), []);
+    const charactersServices: CharactersServices = useMemo(() => new CharactersServices(), []);
     const { save } = useFirebaseDatabase();
     const { user } = useContext(UserContext);
     
-    const [ticker, setTicker] = useState<Coin | null>(null);
+    const [character, setCharacter] = useState<Character | null>(null);
     const [searchWithErrors, setSearchWithErrors] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -37,38 +36,38 @@ const CoinDetails = () => {
         lastname: yup.string().required("Requerido")
     });
 
-    const getInfoCoin = useCallback(
+    const getInfoCharacter = useCallback(
         async () => {
             setLoading(true);
 
             try {
                 if(id) {
-                    const result: any = await coinloreServices.getTicker(id);
+                    const result: any = await charactersServices.getCharacter(id);
 
-                    setTicker(result.data[0]);
+                    setCharacter(result.data.data.results[0]);
                     setSearchWithErrors(false);
                     setLoading(false);
                 }
             } catch(e) {
                 console.log('Error', e);
                 setLoading(false);
-                setTicker(null);
+                setCharacter(null);
                 setSearchWithErrors(true);
             }
         },
-        [coinloreServices, id],
+        [charactersServices, id],
     )
 
     useEffect(() => {
-        getInfoCoin();
-    }, [getInfoCoin]);
+        getInfoCharacter();
+    }, [getInfoCharacter]);
 
     const handleSubmit = async (data: IFormDTO) => {
         const form: FormModel = {
             name: data.name,
             lastname: data.lastname,
             email: (user?.email) ? user.email : "",
-            coin_id: Number(id)
+            character_id: Number(id)
         }
 
         try {
@@ -82,8 +81,6 @@ const CoinDetails = () => {
                 timer: 1500,
                 width: '25rem'
             });
-
-            history.push(`/coin/${id}`);
         } catch(e) {
             console.log('Error', e);
 
@@ -100,7 +97,7 @@ const CoinDetails = () => {
 
     return (
         <Container className="mt-3">
-            <h1>Detalles de la moneda</h1>
+            <h1>Detalles del personaje</h1>
             <hr />
 
             {
@@ -110,28 +107,24 @@ const CoinDetails = () => {
                 </Row>
             }
 
+            {   !loading && searchWithErrors &&
+                <Row>
+                    <p>Se ha producido un error en la busqueda. Refresque la pagina para intentar de nuevo.</p>
+                </Row>
+            }
+
             {
-                !loading && ticker &&
+                !loading && character &&
                 <>
                     <Row>
                         <Col>
                             <p><b>Nombre: </b></p>
-                            <p>{ticker.name}</p>
+                            <p>{character.name}</p>
                         </Col>
 
                         <Col>
-                            <p><b>Simbolo: </b></p>
-                            <p>{ticker.symbol}</p>
-                        </Col>
-
-                        <Col>
-                            <p><b>Ranking: </b></p>
-                            <p>{ticker.rank}</p>
-                        </Col>
-
-                        <Col>
-                            <p><b>Precio: </b></p>
-                            <p>{ticker.price_usd}</p>
+                            <p><b>Descripcion: </b></p>
+                            <p>{character.description}</p>
                         </Col>
                     </Row>
 
@@ -246,4 +239,4 @@ const CoinDetails = () => {
     );
 }
 
-export default CoinDetails;
+export default CharactersDetails;

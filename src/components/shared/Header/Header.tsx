@@ -69,7 +69,7 @@ const Header = () => {
                 <Navbar.Collapse id="responsive-navbar-nav">
                     <Nav>
                         <Nav.Link href="/">
-                            <img src="btc.png" width="70" height="70" alt="Logo" />
+                            <img src="marvel-header.png" width="70" height="70" alt="Logo" />
                         </Nav.Link>
                         <Nav.Link href="/favorites" className="mt-4">Favoritos</Nav.Link>
                         

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default axios.create({
-    baseURL: "https://api.coinlore.net/api",
+    baseURL: "https://gateway.marvel.com/v1/public",
     responseType: 'json',
     headers:
     {

@@ -4,8 +4,8 @@ import { Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Header from './components/shared/Header/Header';
 import MainContent from './components/main/MainContent/MainContent';
-import CoinDetails from './components/main/CoinDetails/CoinDetails';
 import FavoritesList from './components/main/FavoritesList/FavoritesList';
+import CharacterDetails from './components/main/CharacterDetails/CharacterDetails';
 
 function App() {
   return (
@@ -14,8 +14,8 @@ function App() {
       
       <Router>
         <Switch>
-          <Route path='/coin/:id'>
-            <CoinDetails />
+          <Route path='/character/:id'>
+            <CharacterDetails />
           </Route>
 
           <Route path='/favorites'>

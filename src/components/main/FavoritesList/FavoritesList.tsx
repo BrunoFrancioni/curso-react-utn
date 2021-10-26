@@ -1,12 +1,12 @@
 import React from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { Coin } from '../../../core/models/CoinModel';
-import { selectCoins } from '../../../core/store/store';
-import CardCoin from '../../shared/CardCoin/CardCoin';
+import { Character } from '../../../core/models/CharacterModel';
+import { selectCharacters } from '../../../core/store/store';
+import CardCoin from '../../shared/CharacterCard/CharacterCard';
 
 const FavoritesList = () => {
-    const coins = useSelector(selectCoins);
+    const coins = useSelector(selectCharacters);
 
     return (
         <Container className="mt-3">
@@ -17,10 +17,10 @@ const FavoritesList = () => {
                 {
                     coins.favorites && coins.favorites.length !== 0 ?
                     (
-                        coins.favorites.map((ticker: Coin) => {
+                        coins.favorites.map((character: Character) => {
                             return (
-                                <Col key={ticker.id} xs="1" sm="2" md="4" lg="4">
-                                    <CardCoin coin={ticker} />
+                                <Col key={character.id} xs="1" sm="2" md="4" lg="4">
+                                    <CardCoin character={character} />
                                 </Col>
                             )
                         })

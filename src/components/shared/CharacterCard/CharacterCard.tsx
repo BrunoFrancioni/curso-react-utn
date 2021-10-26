@@ -2,28 +2,28 @@ import React from 'react';
 import { Card, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Coin } from '../../../core/models/CoinModel';
-import { addFavoriteAction, removerFavoriteAction } from '../../../core/store/coins/coins.slice';
-import { selectCoins } from '../../../core/store/store';
+import { Character } from '../../../core/models/CharacterModel';
+import { addFavoriteAction, removerFavoriteAction } from '../../../core/store/characters/characters.slice';
+import { selectCharacters } from '../../../core/store/store';
 import Swal from 'sweetalert2';
 
 interface Props {
-    coin: Coin;
+    character: Character;
 }
 
-const CardCoin = ({ coin }: Props) => {
+const CharacterCoin = ({ character }: Props) => {
     const dispatch = useDispatch();
-    const coins = useSelector(selectCoins);
+    const characters = useSelector(selectCharacters);
 
     const history = useHistory();
 
     const addToFavorites = () => {
-        dispatch(addFavoriteAction({ coin: coin }));
+        dispatch(addFavoriteAction({ character: character }));
 
         Swal.fire({
             position: 'bottom-start',
             icon: 'success',
-            title: 'Moneda agregada correctamente a favoritos',
+            title: 'Heroe agregado correctamente a favoritos',
             showConfirmButton: false,
             timer: 1500,
             width: '25rem' 
@@ -31,12 +31,12 @@ const CardCoin = ({ coin }: Props) => {
     }
 
     const removeFromFavorites = () => {
-        dispatch(removerFavoriteAction({ coin: coin }));
+        dispatch(removerFavoriteAction({ character: character }));
 
         Swal.fire({
             position: 'bottom-start',
             icon: 'success',
-            title: 'Moneda eliminada correctamente de favoritos',
+            title: 'Heroe eliminado correctamente de favoritos',
             showConfirmButton: false,
             timer: 1500,
             width: '25rem' 
@@ -44,23 +44,23 @@ const CardCoin = ({ coin }: Props) => {
     }
 
     const getInfo = (id: string) => {
-        history.push(`/coin/${id}`);
+        history.push(`/character/${id}`);
     }
     
     return (
         <Card style={{ width: '18rem' }} className="mb-3">
             <Card.Body>
-                <Card.Title><span style={{fontWeight: 'bold', color: 'blue'}}>{coin.name}</span></Card.Title>
+                <Card.Img variant="top" src={`${character.thumbnail.path}.${character.thumbnail.extension}`} />
+
+                <Card.Title>
+                    <span style={{fontWeight: 'bold', color: 'blue'}}>{character.name}</span>
+                </Card.Title>
+
                 <hr />
-                <Card.Text>
-                    <span><b>Ticker:</b> {coin.symbol}</span>
-                    <br />
-                    <span><b>Precio:</b> ${coin.price_usd}</span>
-                </Card.Text>
 
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                     {
-                        coins.favorites && coins.favorites.indexOf(coin) === -1 ?
+                        characters.favorites && characters.favorites.indexOf(character) === -1 ?
                         <Button onClick={addToFavorites}>
                             <i title="Agregar a favoritos" className="fas fa-star"></i>
                         </Button>
@@ -72,7 +72,7 @@ const CardCoin = ({ coin }: Props) => {
                     
                     <Button
                         variant="success"
-                        onClick={() => getInfo(coin.id)}
+                        onClick={() => getInfo(String(character.id))}
                     >
                         Ver
                     </Button>
@@ -82,4 +82,4 @@ const CardCoin = ({ coin }: Props) => {
     )
 }
 
-export default CardCoin;
+export default CharacterCoin;

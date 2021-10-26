@@ -3,10 +3,10 @@ import { combineReducers } from 'redux';
 import storage from 'redux-persist/lib/storage';
 import thunk from 'redux-thunk';
 import { persistReducer } from 'redux-persist';
-import { coinsSlice } from "./coins/coins.slice";
+import { charactersSlice } from "./characters/characters.slice";
 
 const reducers = combineReducers({
-    reducer: coinsSlice.reducer
+    reducer: charactersSlice.reducer
 });
 
 const persistConfig = {
@@ -23,6 +23,6 @@ const store = configureStore({
 
 type RootState = ReturnType<typeof store.getState>;
 
-export const selectCoins = (state: RootState) => state.reducer;
+export const selectCharacters = (state: RootState) => state.reducer;
 
 export default store;

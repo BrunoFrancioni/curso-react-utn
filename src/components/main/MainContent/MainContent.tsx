@@ -1,53 +1,53 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Col, Container, Row, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Coin } from '../../../core/models/CoinModel';
-import CoinloreServices from '../../../core/services/CoinloreServices';
-import { changeActualPageAction, changeTotalResultsAction } from '../../../core/store/coins/coins.slice';
-import { selectCoins } from '../../../core/store/store';
-import CardCoin from '../../shared/CardCoin/CardCoin';
+import { Character } from '../../../core/models/CharacterModel';
+import CharactersServices from '../../../core/services/CharactersServices';
+import { changeActualPageAction, changeTotalResultsAction, setCharactersAction } from '../../../core/store/characters/characters.slice';
+import { selectCharacters } from '../../../core/store/store';
+import CharacterCoin from '../../shared/CharacterCard/CharacterCard';
 import Paginator from '../../shared/Paginator/Paginator';
 
 const MainContent = () => {
-    const coinloreServices: CoinloreServices = useMemo(() => new CoinloreServices(), []);
+    const charactersServices: CharactersServices = useMemo(() => new CharactersServices(), []);
     const dispatch = useDispatch();
     
-    const coins = useSelector(selectCoins);
+    const characters = useSelector(selectCharacters);
 
-    const [tickers, setTickers] = useState<Coin[]>([]);
     const [searchWithErrors, setSearchWithErrors] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const getTickers = useCallback(
+    const getCharacters = useCallback(
         async () => {
             setLoading(true);
 
             try {
-                const result: any = await coinloreServices.getTickers(coins.actualPage, 10);
+                const result: any = await charactersServices.getCharacters(characters.actualPage, 10);
                 console.log(result);
-                dispatch(changeTotalResultsAction({ totalResults: result.data.info.coins_num }));
-                setTickers(result.data.data);
+                dispatch(changeTotalResultsAction({ totalResults: result.data.data.total }));
+                dispatch(setCharactersAction({ characters: result.data.data.results }));
                 setSearchWithErrors(false);
                 setLoading(false);
             } catch(e) {
                 console.log('Error', e);
                 setLoading(false);
-                setTickers([]);
+                dispatch(setCharactersAction({ characters: [] }));
                 setSearchWithErrors(true);
             }
         }, 
-        [coins.actualPage, coinloreServices, dispatch]
+        [charactersServices, characters.actualPage, dispatch]
     );
 
     useEffect(() => {
         (async () => {
-            await getTickers();
+            await getCharacters();
         })();
-    }, [getTickers]);
+    }, [getCharacters]);
 
     const changePage = (page: number) => {
         setLoading(true);
-        setTickers([]);
+        setSearchWithErrors(false);
+        dispatch(setCharactersAction({ characters: [] }));
         dispatch(changeActualPageAction({ actualPage: page }));
     }
 
@@ -64,15 +64,15 @@ const MainContent = () => {
             }
 
             {
-                !loading && !searchWithErrors && tickers.length !== 0 &&
+                !loading && !searchWithErrors && characters.characters.length !== 0 &&
                 <>
                     <Row>
                         {
-                            tickers && tickers.length !== 0 &&
-                            tickers.map((ticker: Coin) => {
+                            characters.characters.length !== 0 &&
+                            characters.characters.map((character: Character) => {
                                 return (
-                                    <Col key={ticker.id} xs="1" sm="2" md="4" lg="4">
-                                        <CardCoin coin={ticker} />
+                                    <Col key={character.id} xs="1" sm="2" md="4" lg="4">
+                                        <CharacterCoin character={character} />
                                     </Col>
                                 )
                             })
@@ -81,8 +81,8 @@ const MainContent = () => {
 
                     <Row>
                         <Paginator
-                            active={coins.actualPage}
-                            totalResults={coins.totalResults}
+                            active={characters.actualPage}
+                            totalResults={characters.totalResults}
                             sizePage={10}
                             changePage={(changePage.bind(this))}
                         />
@@ -91,7 +91,7 @@ const MainContent = () => {
             }
 
             {
-                !loading && !searchWithErrors && tickers.length === 0 &&
+                !loading && !searchWithErrors && characters.characters.length === 0 &&
                 <p>No se han encontrado resultados.</p>
             }
 

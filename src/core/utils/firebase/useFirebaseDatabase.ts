@@ -5,7 +5,7 @@ import { db } from './firebase';
 const useFirebaseDatabase = () => {
     const save = async (values: FormModel) => {
         try {
-            return await addDoc(collection(db, "suscribedToCoin"), values);
+            return await addDoc(collection(db, "suscribedToCharacter"), values);
         } catch(e: any) {
             throw new Error(e);
         }
