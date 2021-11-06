@@ -89,36 +89,46 @@ const Header = () => {
     }
 
     return (
-        <Navbar collapseOnSelect expand="sm" bg="dark" variant="dark">
+        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
             <Container>
+                <Navbar.Brand href="/">
+                    <img
+                        src="marvel-header.png"
+                        alt="logo"
+                        width="70"
+                        height="70"
+                        className="logo"
+                    />
+                </Navbar.Brand>
+
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                 <Navbar.Collapse id="responsive-navbar-nav">
-                    <Nav>
-                        <Nav.Link href="/">
-                            <img src="marvel-header.png" width="70" height="70" alt="Logo" />
-                        </Nav.Link>
-                        
+                    <Nav
+                        className="me-auto my-2 my-lg-0"
+                        style={{ maxHeight: '100px' }}
+                        navbarScroll
+                    >
                         {
                             user?.uid &&
-                            <Nav.Link href="/favorites" className="mt-4">Favoritos</Nav.Link>
-                        }
-                        
-                        {
-                            !user?.uid ?
-                            (
-                                <Button 
-                                    variant="success"
-                                    onClick={() => login()}
-                                >Login</Button>
-                            ) :
-                            (
-                                <Button 
-                                    variant="light"
-                                    onClick={() => logout()}
-                                >Cerrar sesion</Button>
-                            )
+                            <Nav.Link href="/favorites">Favoritos</Nav.Link>
                         }
                     </Nav>
+
+                    {
+                        !user?.uid ?
+                        (
+                            <Button 
+                                variant="success"
+                                onClick={() => login()}
+                            >Login</Button>
+                        ) :
+                        (
+                            <Button 
+                                variant="light"
+                                onClick={() => logout()}
+                            >Cerrar sesion</Button>
+                        )
+                    }
                 </Navbar.Collapse>
             </Container>
         </Navbar>

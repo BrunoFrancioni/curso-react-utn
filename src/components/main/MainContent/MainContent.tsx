@@ -23,7 +23,7 @@ const MainContent = () => {
 
             try {
                 const result: any = await charactersServices.getCharacters(characters.actualPage, 10);
-                console.log(result);
+                
                 dispatch(changeTotalResultsAction({ totalResults: result.data.data.total }));
                 dispatch(setCharactersAction({ characters: result.data.data.results }));
                 setSearchWithErrors(false);
