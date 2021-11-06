@@ -20,8 +20,8 @@ interface InteractActualPage {
     actualPage: number;
 }
 
-interface InteractFavorite {
-    character: Character;
+interface InteractFavorites {
+    favorites: Character[];
 }
 
 const initialState: CharactersState = {
@@ -36,19 +36,16 @@ export const charactersSlice = createSlice({
     initialState: initialState,
     reducers: {
         setCharacters: (state: CharactersState, action: PayloadAction<interactCharacters>) => {
-            state.characters = action.payload.characters
+            state.characters = action.payload.characters;
         },
         changeTotalResults: (state: CharactersState, action: PayloadAction<InteractTotalResults>) => {
-            state.totalResults = action.payload.totalResults
+            state.totalResults = action.payload.totalResults;
         },
         changeActualPage: (state: CharactersState, action: PayloadAction<InteractActualPage>) => {
-            state.actualPage = action.payload.actualPage
+            state.actualPage = action.payload.actualPage;
         },
-        addFavorite: (state: CharactersState, action: PayloadAction<InteractFavorite>) => {
-            state.favorites.push(action.payload.character)
-        },
-        removeFavorite: (state: CharactersState, action: PayloadAction<InteractFavorite>) => {
-            state.favorites = state.favorites.filter((x: Character) => x.id !== action.payload.character.id)
+        setFavorites: (state: CharactersState, action: PayloadAction<InteractFavorites>) => {
+            state.favorites = action.payload.favorites;
         }
     }
 });
@@ -58,7 +55,6 @@ export const {
         setCharacters: setCharactersAction,
         changeTotalResults: changeTotalResultsAction,
         changeActualPage: changeActualPageAction,
-        addFavorite: addFavoriteAction,
-        removeFavorite: removerFavoriteAction
+        setFavorites: setFavoritesAction
     }
 } = charactersSlice;

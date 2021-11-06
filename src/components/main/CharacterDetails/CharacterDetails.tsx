@@ -19,7 +19,7 @@ const CharactersDetails = () => {
     const { id }: { id: string | undefined } = useParams();
 
     const charactersServices: CharactersServices = useMemo(() => new CharactersServices(), []);
-    const { save } = useFirebaseDatabase();
+    const { saveForm } = useFirebaseDatabase();
     const { user } = useContext(UserContext);
     
     const [character, setCharacter] = useState<Character | null>(null);
@@ -71,7 +71,7 @@ const CharactersDetails = () => {
         }
 
         try {
-            await save(form);
+            await saveForm(form);
 
             Swal.fire({
                 position: 'bottom-start',

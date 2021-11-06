@@ -4,14 +4,36 @@ import { Button, Container, Nav, Navbar } from 'react-bootstrap';
 import { provider } from '../../../core/utils/firebase/firebase';
 import { User, UserContext } from '../../../core/context/UserContext';
 import Swal from 'sweetalert2';
+import useFirebaseDatabase from '../../../core/utils/firebase/useFirebaseDatabase';
+import { useDispatch } from 'react-redux';
+import { setFavoritesAction } from '../../../core/store/characters/characters.slice';
 
 const Header = () => {
+    const dispatch = useDispatch();
     const auth = getAuth();
     const { user, setUser } = useContext(UserContext);
 
+    const { getFavorites } = useFirebaseDatabase();
+
+    const getFavoritesOfUser = async (id: string | undefined) => {
+        try {
+            const result = await getFavorites(id ? id : "");
+            console.log("result", result);
+            if(result) {
+                dispatch(setFavoritesAction({ favorites: result.favs }));
+            }
+        } catch(e) {
+            console.log(e);
+        }
+    }
+
+    const cleanFavoritesOfUser = async () => {
+        dispatch(setFavoritesAction({ favorites: [] }));
+    }
+
     const login = () => {
         signInWithPopup(auth, provider)
-            .then(result => {
+            .then(async result => {
                 const user = result.user;
 
                 const userData: User = {
@@ -21,6 +43,8 @@ const Header = () => {
                 }
 
                 setUser(userData);
+
+                await getFavoritesOfUser(userData.uid);
                 
                 Swal.fire({
                     title: 'Sesion iniciada correctamente !',
@@ -48,9 +72,11 @@ const Header = () => {
             title: '¿Seguro desea cerrar la sesión?',
             showCancelButton: true,
             confirmButtonText: `Cerrar`,
-        }).then(result => {
+        }).then(async result => {
             if (result.isConfirmed) {
                 setUser({});
+
+                await cleanFavoritesOfUser();
 
                 Swal.fire({
                     title: 'Sesion cerrada correctamente !',
@@ -71,7 +97,11 @@ const Header = () => {
                         <Nav.Link href="/">
                             <img src="marvel-header.png" width="70" height="70" alt="Logo" />
                         </Nav.Link>
-                        <Nav.Link href="/favorites" className="mt-4">Favoritos</Nav.Link>
+                        
+                        {
+                            user?.uid &&
+                            <Nav.Link href="/favorites" className="mt-4">Favoritos</Nav.Link>
+                        }
                         
                         {
                             !user?.uid ?
