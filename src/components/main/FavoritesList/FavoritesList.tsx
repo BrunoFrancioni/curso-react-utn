@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { UserContext } from '../../../core/context/UserContext';
 import { Character } from '../../../core/models/CharacterModel';
 import { selectCharacters } from '../../../core/store/store';
 import CardCoin from '../../shared/CharacterCard/CharacterCard';
 
 const FavoritesList = () => {
     const characters = useSelector(selectCharacters);
+    const { user } = useContext(UserContext);
+
+    const history = useHistory();
+
+    if(!user || !user.uid) {
+        history.push("/");
+    }
 
     return (
         <Container className="mt-3 mb-3">
